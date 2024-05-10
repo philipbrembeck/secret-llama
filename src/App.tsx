@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import * as webllm from "@mlc-ai/web-llm";
 import UserInput from "./components/UserInput";
 import useChatStore from "./hooks/useChatStore";
@@ -10,6 +10,10 @@ import MessageList from "./components/MessageList";
 import useColorMode from "./hooks/useColorMode";
 import useOLEDMode from "./hooks/useOLEDMode";
 import OLEDModeButton from "./components/OLEDModeButton";
+import checkWebGPUSupport from "./utils/checkWebGPUSupport";
+import Modal from "./components/ui/dialog";
+import { Transition, TransitionChild } from "@headlessui/react";
+import { Button } from "./components/ui/button";
 
 const appConfig = webllm.prebuiltAppConfig;
 appConfig.useIndexedDBCache = true;
@@ -189,9 +193,115 @@ function App() {
     engine.interruptGenerate();
   }
 
+  const [webGPUInfo, setwebGPUInfo] = useState<boolean>(!checkWebGPUSupport());
+
+  const [activeButton, setActiveButton] = useState<string | null>(null);
+
   return (
     <div className="px-4 w-full">
-      <div className="absolute top-0 left-0 p-4 flex items-center gap-2">
+      <Modal
+        open={webGPUInfo}
+        setOpen={setwebGPUInfo}
+        icon="error"
+        title="WebGPU is not supported"
+      >
+        <p className="text-slate-600 prose">
+          Your browser currently does not support WebGPU, which is necessary to
+          run this tool. <br />
+          Browsers that are supported are Chrome and Edge (with GPU required).{" "}
+          <br />
+          In other Browsers, there may be the possibility to enable the WebGPU
+          flag in the settings.
+          <br />
+        </p>
+        <p className="text-slate-600 prose">
+          Click on one of those Browsers to get detailed instructions:
+          <div className="flex justify-start items-start space-x-3 pt-5 pb-5">
+            <Button
+              variant="default"
+              onClick={() =>
+                setActiveButton(activeButton !== "firefox" ? "firefox" : null)
+              }
+            >
+              Firefox
+            </Button>
+
+            <Button
+              variant="default"
+              onClick={() =>
+                setActiveButton(activeButton !== "safari" ? "safari" : null)
+              }
+            >
+              Safari for iOS
+            </Button>
+
+            <Button
+              variant="default"
+              onClick={() =>
+                setActiveButton(activeButton !== "safariTP" ? "safariTP" : null)
+              }
+            >
+              Safari TP
+            </Button>
+          </div>
+          <Transition show={activeButton === "safariTP"} as={Fragment}>
+            <TransitionChild
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <ul className="prose">
+                <li>
+                  <strong>Safari (Developer Preview)</strong>:
+                  <ol>
+                    <li>Open Safari</li>
+                    <li>Preferences</li>
+                    <li>Feature Flags</li>
+                    <li>Enable WebGPU if available</li>
+                  </ol>
+                </li>
+              </ul>
+            </TransitionChild>
+          </Transition>
+          <Transition show={activeButton === "safari"} as={Fragment}>
+            <ul className="prose">
+              <li>
+                <strong>Safari for iOS</strong>:
+                <ol>
+                  <li>Open Preferences</li>
+                  <li>Naviate to Safari</li>
+                  <li>Tap to Advanced</li>
+                  <li>Tap on Feature Flags</li>
+                  <li>Enable WebGPU if available</li>
+                </ol>
+              </li>
+            </ul>
+          </Transition>
+          <Transition show={activeButton === "firefox"} as={Fragment}>
+            <ul className="prose">
+              <li>
+                <strong>Firefox</strong>:
+                <ol>
+                  <li>Open Firefox</li>
+                  <li>Open about:config</li>
+                  <li>Search for "dom.webgpu.enabled"</li>
+                  <li>Set to "true"</li>
+                  <li>Search for "gfx.webgpu.force-enabled"</li>
+                  <li>Set to "true"</li>
+                </ol>
+              </li>
+            </ul>
+          </Transition>
+          Looking for other browsers? Go to the{" "}
+          <a href="https://caniuse.com/webgpu">caniuse-page for WebGPU</a>.
+        </p>
+      </Modal>
+
+      <div className="absolute top-0 left-0 bg-white dark:bg-background 2xl:bg-transparent 2xl:dark:bg-transparent w-screen 2xl:w-auto shadow-[0_1.25px_0_0_rgba(234,242,250,1)] dark:shadow-[0_1.25px_0_0_rgba(28,38,46,1)] 2xl:shadow-none 2xl:dark:shadow-none p-4 flex items-center gap-2">
         <div>
           <ResetChatButton resetChat={resetChat} />
         </div>

@@ -17,10 +17,6 @@ jobs:
       contents: read
       packages: write
 
-    environment:
-      name: Production
-      url: https://veganify.app
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
