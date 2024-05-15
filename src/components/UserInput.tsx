@@ -19,11 +19,17 @@ function UserInput({
   const selectedModel = useChatStore((state) => state.selectedModel);
   const isGenerating = useChatStore((state) => state.isGenerating);
 
+  const disableComponent = useChatStore((state) => state.disableComponent);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      if (!userInput.trim()) {
+        console.error("Illegal input. Input can't be empty.");
+        return;
+      }
       handleSend();
     }
   };
@@ -49,16 +55,31 @@ function UserInput({
               ring-0 focus:border-0 focus-visible:ring-0 text-base
               resize-none"
           placeholder={`Message ${MODEL_DESCRIPTIONS[selectedModel].displayName}`}
+          disabled={disableComponent}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={handleKeyDown}
           value={userInput}
         />
         {!isGenerating && (
-          <Button className="p-2" variant="ghost" onClick={onSend}>
-            <FaArrowUp className="h-5 w-5 text-gray-500" />
+          <Button
+            className="p-2"
+            variant="ghost"
+            onClick={() => {
+              if (userInput.trim()) {
+                console.log("in");
+                onSend();
+              }
+            }}
+            disabled={disableComponent}
+          >
+            <FaArrowUp className="h-5 w-5 text-gray-500 text-semibold" />
           </Button>
         )}
-        {isGenerating && <Button onClick={onStop}>Stop</Button>}
+        {isGenerating && (
+          <Button onClick={onStop} disabled={!disableComponent}>
+            Stop
+          </Button>
+        )}
       </div>
       <a
         href="#"
