@@ -13,8 +13,9 @@ Big thanks to the inference engine provided by [webllm](https://github.com/mlc-a
 
 Join us on Discord
 
-[![](https://dcbadge.vercel.app/api/server/nDjadD9U)](https://discord.gg/nDjadD9U)
+[![](https://dcbadge.vercel.app/api/server/QkVzykMc9V)](https://discord.gg/QkVzykMc9V)
 
+https://discord.gg/QkVzykMc9V
 
 ## System Requirements
 
