@@ -1,6 +1,12 @@
-# Secret Llama
+# Secret Llama (Fork)
 
 ![secret llama](https://github.com/abi/secret-llama/assets/23818/0bf43a95-4fe5-4c53-87bc-b558e5c4968f)
+
+This fork includes a Docker-Image, available at:
+```bash
+$ docker pull ghcr.io/philipbrembeck/secret-llama:main
+```
+
 
 Entirely-in-browser, fully private LLM chatbot supporting Llama 3, Mistral and other open source models. 
 
